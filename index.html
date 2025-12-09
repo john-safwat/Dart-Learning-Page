@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
+    <title>Collaborative Dart Workshop</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="assets/css/style.css" />
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "var(--primary)",
+              "accent-orange": "var(--accent-orange)",
+              "background-light": "var(--background-light)",
+              "background-dark": "var(--background-dark)",
+              "secondary-gray": "var(--secondary-gray)",
+            },
+            fontFamily: {
+              display: ["Outfit", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+        font-size: 24px;
+      }
+    </style>
+    <!-- Core logic script + Landing page renderer -->
+    <script src="js/siteData.js"></script>
+    <script src="js/app.js" defer></script>
+    <script src="js/landing.js" defer></script>
+  </head>
+  <body class="bg-background-light dark:bg-background-dark font-display">
+    <div class="relative flex min-h-screen w-full flex-col">
+      <!-- Header -->
+      <header
+        class="sticky top-0 z-50 flex items-center justify-center border-b border-solid border-gray-200/50 dark:border-white/10 bg-background-light/80 dark:bg-background-dark/80 backdrop-blur-sm"
+      >
+        <div
+          class="flex items-center justify-between w-full max-w-6xl px-4 py-3"
+        >
+          <div class="flex items-center gap-4 text-gray-800 dark:text-white">
+            <div class="h-8 w-8 text-primary">
+              <img
+                src="assets/images/dart-svgrepo-com.svg"
+                alt="Dart icon"
+                class="h-6 w-6"
+              />
+            </div>
+            <h2 class="text-gray-800 dark:text-white text-lg font-bold">
+              Dart From Zero to Hero
+            </h2>
+          </div>
+          <div class="flex items-center gap-8">
+            <nav class="hidden md:flex items-center gap-9">
+              <a
+                class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium"
+                href="lessons.html"
+                >Learn Dart</a
+              >
+              <a
+                class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium"
+                href="examples.html"
+                >Code Examples</a
+              >
+              <a
+                class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium"
+                href="quiz.html"
+                >Quizs</a
+              >
+            </nav>
+          </div>
+        </div>
+      </header>
+
+      <!-- Main Content (Injected via JS) -->
+      <main id="landing-main" class="flex-grow">
+        <div class="flex justify-center items-center h-64">
+          <p>Loading content...</p>
+        </div>
+      </main>
+
+      <!-- Footer -->
+      <footer
+        class="flex justify-center border-t border-solid border-gray-200/50 dark:border-white/10 bg-background-light dark:bg-background-dark"
+      >
+        <div
+          class="flex flex-col sm:flex-row items-center justify-between w-full max-w-6xl px-4 py-6 gap-4"
+        >
+          <p class="text-sm text-gray-500 dark:text-gray-400">
+            © 2024 Collaborative Dart Workshop. All rights reserved.
+          </p>
+          <div class="flex items-center gap-4">
+            <a
+              class="text-gray-500 dark:text-gray-400 hover:text-primary dark:hover:text-primary transition-colors"
+              href="https://github.com/jolianasafwat"
+              target="_blank"
+            >
+              <img
+                src="assets/images/github-142-svgrepo-com.svg"
+                alt="GitHub icon"
+                class="h-6 w-6"
+              />
+              <span class="sr-only">GitHub</span>
+            </a>
+          </div>
+        </div>
+      </footer>
+    </div>
+  </body>
+</html>
