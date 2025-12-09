@@ -1,42 +1,58 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta charset="utf-8" />
+    <meta content="width=device-width, initial-scale=1.0" name="viewport" />
     <title>Dart Master - Quiz</title>
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700;900&amp;display=swap"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap"
+      rel="stylesheet"
+    />
+    <!-- Global Style for Variables -->
     <link rel="stylesheet" href="assets/css/style.css" />
+
+    <script>
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              primary: "var(--primary)",
+              "background-light": "var(--background-light)",
+              "background-dark": "var(--background-dark)",
+              "accent-orange": "var(--accent-orange)",
+            },
+            fontFamily: {
+              display: ["Inter", "sans-serif"],
+            },
+            borderRadius: {
+              DEFAULT: "0.25rem",
+              lg: "0.5rem",
+              xl: "0.75rem",
+              full: "9999px",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- Scripts -->
     <script src="js/siteData.js"></script>
-    <script src="js/app.js" defer></script>
     <script src="js/quiz.js" defer></script>
   </head>
-  <body>
-    <header>
-      <h1>Collaborative Dart Workshop</h1>
-      <nav>
-        <ul>
-          <li><a href="index.html">Home</a></li>
-          <li><a href="lessons.html">Lessons</a></li>
-          <li><a href="examples.html">Examples</a></li>
-          <li><a href="quiz.html" class="active">Quiz</a></li>
-        </ul>
-      </nav>
-    </header>
-
-    <main>
-      <h2>Knowledge Check</h2>
-      <form id="quiz-form">
-        <!-- Quiz questions will be injected here -->
-      </form>
-
-      <button id="submit-quiz" type="button">Submit Quiz</button>
-
-      <div id="score-display" class="hidden">
-        <h3>Your Score: <span id="score-value">0</span>/15</h3>
+  <body
+    class="font-display bg-background-light dark:bg-background-dark flex flex-col min-h-screen"
+  >
+    <!-- Root container for JS injection -->
+    <div id="quiz-root" class="relative flex flex-col min-h-screen w-full">
+      <div class="flex h-screen items-center justify-center">
+        <p class="text-white">Loading Quiz...</p>
       </div>
-    </main>
-
-    <footer>
-      <p>&copy; 2024 Collaborative Dart Workshop</p>
-    </footer>
+    </div>
   </body>
 </html>

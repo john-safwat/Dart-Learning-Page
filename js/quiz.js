@@ -1,66 +1,125 @@
 // js/quiz.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    const data = window.siteData;
-
-    if (!data) {
-        console.error("siteData not loaded!");
+    if (!window.siteData || !window.siteData.concepts) {
+        console.error("Site data not loaded");
         return;
     }
 
-    renderQuiz(data.concepts);
+    const concepts = window.siteData.concepts;
+    renderQuizPage(concepts);
 });
 
-function renderQuiz(concepts) {
-    const form = document.getElementById('quiz-form');
-    if (!form) return;
-    
-    let questionCount = 0;
+function renderQuizPage(concepts) {
+    const root = document.getElementById('quiz-root');
+    if (!root) return;
 
-    concepts.forEach((concept, conceptIndex) => {
-        const conceptHeader = document.createElement('h3');
-        conceptHeader.textContent = `Topic: ${concept.title}`;
-        form.appendChild(conceptHeader);
+    root.innerHTML = `
+    <!-- TopNavBar -->
+       <header class="sticky top-0 z-10 flex items-center justify-between whitespace-nowrap border-b border-solid border-white/10 bg-background-dark/80 px-7 py-3 backdrop-blur-sm">
+        <div class="flex items-center justify-between w-full max-w-1xl py-3" >
+          <div class="flex items-center gap-2 text-gray-800 dark:text-white">
+            <div class="h-8 w-8 text-primary">
+              <img src="assets/images/dart-svgrepo-com.svg" alt="Dart icon" class="h-6 w-6" />
+            </div>
+            <h2 class="text-gray-800 dark:text-white text-lg font-bold">
+              Dart From Zero to Hero
+            </h2>
+          </div>
+          <div class="flex items-center gap-2">
+            <nav class="hidden md:flex items-center gap-9">
+             <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium" href="index.html">Home</a>
+              <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium" href="lessons.html">Learn Dart</a>
+              <a class="text-gray-600 dark:text-gray-300 hover:text-primary dark:hover:text-primary text-sm font-medium" href="examples.html">Code Examples</a>
+              <a class="text-gray-600 dark:text-white hover:text-primary dark:hover:text-primary text-sm font-bold" href="quiz.html">Quizs</a>
+            </nav>
+          </div>
+        </div>
+      </header>
 
-        concept.quiz.forEach((q, qIndex) => {
-            questionCount++;
-            const qBlock = document.createElement('div');
-            qBlock.className = 'question-block';
-            
-            const groupName = `q_${conceptIndex}_${qIndex}`;
+    <!-- Main Content -->
+    <main class="flex-1 overflow-y-auto p-10 bg-background-light dark:bg-background-dark min-h-screen">
+        <div class="mx-auto max-w-4xl">
+            <div class="flex flex-col gap-4 text-center mb-12">
+                <h1 class="text-4xl font-black leading-tight tracking-[-0.033em] text-gray-900 dark:text-white">
+                    Test Your Knowledge
+                </h1>
+                <p class="text-lg text-gray-600 dark:text-slate-400 max-w-2xl mx-auto">
+                    Challenge yourself with these questions to verify your understanding of Dart concepts.
+                </p>
+            </div>
 
-            qBlock.innerHTML = `
-                <p>${questionCount}. ${q.question}</p>
-                <div class="options-group">
-                    ${q.options.map((opt, optIndex) => `
-                        <label>
-                            <input type="radio" name="${groupName}" value="${optIndex}">
-                            ${opt}
-                        </label>
-                    `).join('')}
+            <form id="quiz-form">
+                ${concepts.map((concept, cIndex) => renderConceptQuiz(concept, cIndex)).join('')}
+            </form>
+
+            <div class="flex flex-col items-center mt-12 mb-20 gap-6">
+                <button id="submit-quiz-btn" onclick="calculateScore()" class="flex items-center justify-center gap-3 rounded-xl bg-primary px-8 py-4 text-white font-bold text-lg hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25">
+                    <span class="material-symbols-outlined">check_circle</span>
+                    Submit Answers
+                </button>
+
+                <!-- Results Section (Hidden initially) -->
+                <div id="results-panel" class="hidden w-full max-w-2xl rounded-2xl bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 p-8 shadow-2xl text-center">
+                    <div class="mb-4 flex justify-center">
+                        <div class="rounded-full bg-green-100 p-4 dark:bg-green-900/30">
+                            <span class="material-symbols-outlined text-4xl text-green-600 dark:text-green-400">emoji_events</span>
+                        </div>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900 dark:text-white mb-2">Quiz Completed!</h2>
+                    <p class="text-gray-600 dark:text-gray-300 mb-6">You scored <span id="score-value" class="font-black text-primary text-2xl">0</span> out of <span id="total-value" class="font-bold">0</span></p>
+                    
+                    <button onclick="window.scrollTo({top: 0, behavior: 'smooth'})" class="text-primary hover:text-primary/80 font-medium hover:underline">
+                        Review Answers
+                    </button>
                 </div>
-            `;
-            form.appendChild(qBlock);
-        });
-    });
-
-    const submitBtn = document.getElementById('submit-quiz');
-    if (submitBtn) {
-        submitBtn.addEventListener('click', () => {
-            calculateScore(concepts);
-        });
-    }
+            </div>
+        </div>
+    </main>
+    `;
 }
 
-function calculateScore(concepts) {
+function renderConceptQuiz(concept, cIndex) {
+    return `
+    <div class="mb-10">
+        <h3 class="text-2xl font-bold text-gray-900 dark:text-white mb-6 border-l-4 border-accent-orange pl-4">
+            ${concept.title}
+        </h3>
+        
+        <div class="flex flex-col gap-6">
+            ${concept.quiz.map((q, qIndex) => `
+                <div class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0f1b23] p-6 shadow-sm transition-all hover:shadow-md">
+                    <p class="text-lg font-medium text-gray-800 dark:text-white mb-4">
+                        <span class="text-slate-400 mr-2">${qIndex + 1}.</span>${q.question}
+                    </p>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        ${q.options.map((opt, optIndex) => `
+                            <label class="relative flex cursor-pointer items-center rounded-lg border border-gray-200 dark:border-white/10 p-4 transition-all hover:bg-gray-50 dark:hover:bg-white/5 has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
+                                <input type="radio" name="q_${cIndex}_${qIndex}" value="${optIndex}" class="peer h-4 w-4 border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700">
+                                <span class="ml-3 text-gray-700 dark:text-gray-300 font-medium">${opt}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                </div>
+            `).join('')}
+        </div>
+    </div>
+    `;
+}
+
+// Attach to window for onclick access
+window.calculateScore = function() {
+    const concepts = window.siteData.concepts;
     let score = 0;
     let totalQuestions = 0;
 
-    concepts.forEach((concept, conceptIndex) => {
+    concepts.forEach((concept, cIndex) => {
         concept.quiz.forEach((q, qIndex) => {
             totalQuestions++;
-            const groupName = `q_${conceptIndex}_${qIndex}`;
+            const groupName = `q_${cIndex}_${qIndex}`;
             const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+            
+            // Visual Feedback Logic can be added here (highlight correct/incorrect)
             
             if (selected && parseInt(selected.value) === q.answer) {
                 score++;
@@ -68,14 +127,17 @@ function calculateScore(concepts) {
         });
     });
 
-    const scoreDisplay = document.getElementById('score-display');
-    const scoreValue = document.getElementById('score-value');
+    // Display Results
+    const resultsPanel = document.getElementById('results-panel');
+    const scoreVal = document.getElementById('score-value');
+    const totalVal = document.getElementById('total-value');
     
-    if (scoreValue) scoreValue.textContent = score;
-    if (scoreDisplay) {
-        scoreDisplay.innerHTML = `<h3>Your Score: <span id="score-value">${score}</span>/${totalQuestions}</h3>`;
-        scoreDisplay.classList.remove('hidden');
+    if (resultsPanel && scoreVal && totalVal) {
+        scoreVal.textContent = score;
+        totalVal.textContent = totalQuestions;
+        resultsPanel.classList.remove('hidden');
+        
+        // Scroll to results
+        resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-    
-    window.scrollTo(0, document.body.scrollHeight);
-}
+};
