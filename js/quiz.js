@@ -53,14 +53,14 @@ function renderQuizPage(concepts) {
                 ${concepts.map((concept, cIndex) => renderConceptQuiz(concept, cIndex)).join('')}
             </form>
 
-            <div class="flex flex-col items-center mt-12 mb-20 gap-6">
+            <div class="flex flex-col items-center mt-12 mb-20 gap-6 w-full">
                 <button id="submit-quiz-btn" onclick="calculateScore()" class="flex items-center justify-center gap-3 rounded-xl bg-primary px-8 py-4 text-white font-bold text-lg hover:bg-primary/90 transition-all shadow-lg hover:shadow-primary/25">
                     <span class="material-symbols-outlined">check_circle</span>
                     Submit Answers
                 </button>
 
                 <!-- Results Section (Hidden initially) -->
-                <div id="results-panel" class="hidden w-full max-w-2xl rounded-2xl bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 p-8 shadow-2xl text-center">
+                <div id="results-panel" class="hidden w-full rounded-2xl bg-white dark:bg-background-dark border border-gray-200 dark:border-white/10 p-8 shadow-2xl text-center">
                     <div class="mb-4 flex justify-center">
                         <div class="rounded-full bg-green-100 p-4 dark:bg-green-900/30">
                             <span class="material-symbols-outlined text-4xl text-green-600 dark:text-green-400">emoji_events</span>
@@ -88,13 +88,17 @@ function renderConceptQuiz(concept, cIndex) {
         
         <div class="flex flex-col gap-6">
             ${concept.quiz.map((q, qIndex) => `
-                <div class="rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0f1b23] p-6 shadow-sm transition-all hover:shadow-md">
-                    <p class="text-lg font-medium text-gray-800 dark:text-white mb-4">
-                        <span class="text-slate-400 mr-2">${qIndex + 1}.</span>${q.question}
-                    </p>
+                <div id="card_${cIndex}_${qIndex}" class="question-card rounded-xl border border-gray-200 dark:border-white/10 bg-white dark:bg-[#0f1b23] p-6 shadow-sm transition-all hover:shadow-md">
+                    <div class="flex items-center justify-between mb-4">
+                        <p class="text-lg font-medium text-gray-800 dark:text-white">
+                            <span class="text-slate-400 mr-2">${qIndex + 1}.</span>${q.question}
+                        </p>
+                        <!-- Status Icon Placeholder -->
+                        <span id="status_${cIndex}_${qIndex}" class="material-symbols-outlined hidden text-2xl"></span>
+                    </div>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                         ${q.options.map((opt, optIndex) => `
-                            <label class="relative flex cursor-pointer items-center rounded-lg border border-gray-200 dark:border-white/10 p-4 transition-all hover:bg-gray-50 dark:hover:bg-white/5 has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
+                            <label id="label_${cIndex}_${qIndex}_${optIndex}" class="relative flex cursor-pointer items-center rounded-lg border border-gray-200 dark:border-white/10 p-4 transition-all hover:bg-gray-50 dark:hover:bg-white/5 has-[:checked]:border-primary has-[:checked]:bg-primary/5 has-[:checked]:ring-1 has-[:checked]:ring-primary">
                                 <input type="radio" name="q_${cIndex}_${qIndex}" value="${optIndex}" class="peer h-4 w-4 border-gray-300 text-primary focus:ring-primary dark:border-gray-600 dark:bg-gray-700">
                                 <span class="ml-3 text-gray-700 dark:text-gray-300 font-medium">${opt}</span>
                             </label>
@@ -117,12 +121,56 @@ window.calculateScore = function() {
         concept.quiz.forEach((q, qIndex) => {
             totalQuestions++;
             const groupName = `q_${cIndex}_${qIndex}`;
+            const cardId = `card_${cIndex}_${qIndex}`;
+            const statusId = `status_${cIndex}_${qIndex}`;
+            
             const selected = document.querySelector(`input[name="${groupName}"]:checked`);
+            const card = document.getElementById(cardId);
+            const statusIcon = document.getElementById(statusId);
             
-            // Visual Feedback Logic can be added here (highlight correct/incorrect)
+            // Reset styles
+            card.className = "question-card rounded-xl border p-6 shadow-sm transition-all bg-white dark:bg-[#0f1b23] border-gray-200 dark:border-white/10";
+            statusIcon.classList.add('hidden');
             
-            if (selected && parseInt(selected.value) === q.answer) {
-                score++;
+            // Highlight Correct Answer (Always show which one was right)
+            const correctLabel = document.getElementById(`label_${cIndex}_${qIndex}_${q.answer}`);
+            if (correctLabel) {
+                // We add a specific 'correct-answer' style logic later or now
+                // For now, only show green if user selected it or if we want to reveal answers
+            }
+
+            if (selected) {
+                const selectedVal = parseInt(selected.value);
+                const selectedLabel = document.getElementById(`label_${cIndex}_${qIndex}_${selectedVal}`);
+
+                if (selectedVal === q.answer) {
+                    // Correct
+                    score++;
+                    card.classList.remove('border-gray-200', 'dark:border-white/10');
+                    card.classList.add('border-green-500', 'dark:border-green-500', 'bg-green-50', 'dark:bg-green-900/10');
+                    
+                    statusIcon.textContent = "check_circle";
+                    statusIcon.className = "material-symbols-outlined text-green-500 text-2xl block";
+                    
+                    selectedLabel.classList.add('bg-green-100', 'border-green-500', 'dark:bg-green-900/30', 'dark:border-green-400');
+                } else {
+                    // Incorrect
+                    card.classList.remove('border-gray-200', 'dark:border-white/10');
+                    card.classList.add('border-red-500', 'dark:border-red-500', 'bg-red-50', 'dark:bg-red-900/10');
+                    
+                    statusIcon.textContent = "cancel";
+                    statusIcon.className = "material-symbols-outlined text-red-500 text-2xl block";
+                    
+                    selectedLabel.classList.add('bg-red-100', 'border-red-500', 'dark:bg-red-900/30', 'dark:border-red-400');
+                    
+                    // Show correct answer
+                    if(correctLabel) {
+                         correctLabel.classList.add('bg-green-100', 'border-green-500', 'dark:bg-green-900/30', 'dark:border-green-400');
+                    }
+                }
+            } else {
+                 // No answer selected - Mark as unanswered/wrong
+                 card.classList.add('border-orange-300', 'dark:border-orange-500/50');
             }
         });
     });
@@ -131,11 +179,13 @@ window.calculateScore = function() {
     const resultsPanel = document.getElementById('results-panel');
     const scoreVal = document.getElementById('score-value');
     const totalVal = document.getElementById('total-value');
+    const submitBtn = document.getElementById('submit-quiz-btn');
     
     if (resultsPanel && scoreVal && totalVal) {
         scoreVal.textContent = score;
         totalVal.textContent = totalQuestions;
         resultsPanel.classList.remove('hidden');
+        submitBtn.classList.add('hidden'); // Hide submit button after submission
         
         // Scroll to results
         resultsPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
